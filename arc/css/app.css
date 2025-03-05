@@ -1,0 +1,45 @@
+.app-container {
+  display: flex;
+  font-family: Arial, sans-serif;
+}
+
+.sidebar {
+  width: 250px;
+  background: #f4f4f4;
+  padding: 10px;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.viewer {
+  flex-grow: 1;
+  padding: 20px;
+  border-left: 1px solid #ddd;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+iframe {
+  width: 90%;
+  height: 90%;
+  border: none;
+}
+
+ul {
+  list-style-type: none;
+  padding-left: 10px;
+}
+
+li {
+  cursor: pointer;
+  margin: 5px 0;
+}
+
+.nested {
+  display: none;
+}
+
+.active {
+  display: block;
+}
