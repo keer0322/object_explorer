@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Storage Browser</title>
+    <style>
+        body {
+            display: flex;
+            font-family: Arial, sans-serif;
+        }
+        #sidebar {
+            width: 250px;
+            background: #f4f4f4;
+            padding: 10px;
+            overflow-y: auto;
+            height: 100vh;
+        }
+        #file-container {
+            flex-grow: 1;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-left: 1px solid #ddd;
+        }
+        #file-viewer {
+            width: 90%;
+            height: 90%;
+            border: none;
+            display: none;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 15px;
+        }
+        li {
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        async function fetchFiles() {
+            const response = await fetch('http://localhost:3000/files');
+            const fileTree = await response.json();
+            const fileList = document.getElementById('file-tree');
+            fileList.innerHTML = '';
+            buildTree(fileTree, fileList);
+        }
+
+        function buildTree(tree, container) {
+            Object.keys(tree).forEach(key => {
+                let item = document.createElement('li');
+                if (tree[key].url) {
+                    item.innerHTML = `<span onclick="viewFile('${tree[key].url}')">${key}</span>`;
+                } else {
+                    item.innerHTML = `<span onclick="toggleExpand(this)">${key}</span>`;
+                    let sublist = document.createElement('ul');
+                    sublist.style.display = 'none';
+                    buildTree(tree[key], sublist);
+                    item.appendChild(sublist);
+                }
+                container.appendChild(item);
+            });
+        }
+
+        function toggleExpand(element) {
+            let sublist = element.nextElementSibling;
+            sublist.style.display = sublist.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function viewFile(url) {
+            let viewer = document.getElementById('file-viewer');
+            let container = document.getElementById('file-container');
+            
+            // Check if it's an image, PDF, or other file type
+            if (url.match(/\.(jpeg|jpg|png|gif)$/)) {
+                viewer.src = url;
+                viewer.style.display = 'block';
+            } else if (url.match(/\.pdf$/)) {
+                viewer.src = url;
+                viewer.style.display = 'block';
+            } else {
+                container.innerHTML = `<p><a href="${url}" target="_blank">Download File</a></p>`;
+            }
+        }
+    </script>
+</head>
+<body onload="fetchFiles()">
+    <div id="sidebar">
+        <h3>File Explorer</h3>
+        <ul id="file-tree"></ul>
+    </div>
+    <div id="file-container">
+        <iframe id="file-viewer"></iframe>
+    </div>
+</body>
+</html>
